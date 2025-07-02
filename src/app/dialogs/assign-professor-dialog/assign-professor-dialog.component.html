@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Asignar Profesor</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="assign-professor-form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Profesor</mat-label>
+      <mat-select formControlName="profesor" required>
+        <mat-option *ngFor="let prof of professors" [value]="prof">
+          {{ prof.nombre }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('profesor')?.hasError('required')">
+        Debes seleccionar un profesor
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="save()"
+    [disabled]="form.invalid"
+  >
+    Guardar
+  </button>
+</mat-dialog-actions>

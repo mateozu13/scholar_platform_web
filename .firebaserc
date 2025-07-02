@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "scholar-platform": {
+      "hosting": {
+        "proyecto_final_web": [
+          "scholar-platform"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "scholar-platform"
+  }
+}

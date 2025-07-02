@@ -1,0 +1,55 @@
+.dashboard-container {
+  padding: 1rem;
+}
+
+.summary-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.summary-card {
+  flex: 1 1 200px;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chart-card {
+  padding: 1rem;
+}
+
+.chart-card canvas {
+  max-height: 300px;
+}
+
+.list-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.list-cards mat-card {
+  flex: 1 1 300px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.action-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.action-card button {
+  margin-top: 1rem;
+}

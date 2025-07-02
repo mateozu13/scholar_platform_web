@@ -1,0 +1,19 @@
+.assign-students-content {
+  .search-field {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  table {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  tr.selected {
+    background-color: rgba(0, 0, 255, 0.1);
+  }
+}
+
+.mat-column-select {
+  width: 48px; /* espacio para casillas */
+}

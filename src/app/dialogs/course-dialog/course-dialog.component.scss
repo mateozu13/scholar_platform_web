@@ -1,0 +1,36 @@
+.full-width {
+  width: 100%;
+  display: block;
+  margin-bottom: 16px;
+}
+
+/* Estilos para campos de fecha en una fila */
+.date-fields {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.date-field {
+  width: 48%;
+}
+
+/* Estilo para mensaje de error de fechas */
+.date-error .error-text {
+  color: #f44336; /* color de error estándar de Angular Material */
+  font-size: 0.875rem;
+  margin-bottom: 16px;
+}
+
+/* Campo de imagen */
+.image-field {
+  margin: 16px 0;
+}
+.preview-container {
+  margin-top: 8px;
+}
+.preview-image {
+  max-width: 100%;
+  max-height: 150px;
+  display: block;
+  border: 1px solid #ccc;
+}

@@ -1,0 +1,98 @@
+<mat-toolbar color="primary">
+  <span>Dashboard Administrativo</span>
+  <span class="spacer"></span>
+
+  <button mat-button routerLink="/dashboard">
+    <mat-icon>dashboard_2</mat-icon>
+    Dashboard
+  </button>
+
+  <button mat-button routerLink="/courses">
+    <mat-icon>menu_book</mat-icon>
+    Cursos
+  </button>
+  <button mat-button (click)="logout()">
+    <mat-icon>exit_to_app</mat-icon>
+    Salir
+  </button>
+</mat-toolbar>
+
+<div class="dashboard-container">
+  <!-- Tarjetas de resumen -->
+  <div class="summary-cards">
+    <mat-card class="summary-card">
+      <mat-card-title>Total de cursos</mat-card-title>
+      <mat-card-content>{{ totalCourses }}</mat-card-content>
+    </mat-card>
+    <mat-card class="summary-card">
+      <mat-card-title>Total de usuarios</mat-card-title>
+      <mat-card-content>
+        Admin: {{ userCounts.admin }}, Profesor: {{ userCounts.profesor }},
+        Estudiante: {{ userCounts.estudiante }}
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="summary-card">
+      <mat-card-title>Entregas tardías</mat-card-title>
+      <mat-card-content>{{ lateSubmissionsCount }}</mat-card-content>
+    </mat-card>
+    <mat-card class="summary-card">
+      <mat-card-title>Mensajes (promedio diario 7 días)</mat-card-title>
+      <mat-card-content>{{ avgMessagesPerDay7d }}</mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Gráficas -->
+  <div class="chart-grid">
+    <mat-card class="chart-card">
+      <mat-card-title>Usuarios por rol</mat-card-title>
+      <canvas baseChart [data]="rolesPieData" [type]="'pie'"></canvas>
+    </mat-card>
+    <mat-card class="chart-card">
+      <mat-card-title>Estudiantes por curso</mat-card-title>
+      <canvas baseChart [data]="studentsBarData" [type]="'bar'"></canvas>
+    </mat-card>
+    <mat-card class="chart-card">
+      <mat-card-title>Entregas vs Pendientes</mat-card-title>
+      <canvas
+        baseChart
+        [data]="tasksStackedData"
+        [options]="tasksStackedOptions"
+        [type]="'bar'"
+      ></canvas>
+    </mat-card>
+    <mat-card class="chart-card">
+      <mat-card-title>Promedio de calificaciones por curso</mat-card-title>
+      <canvas baseChart [data]="gradesBarData" [type]="'bar'"></canvas>
+    </mat-card>
+    <mat-card class="chart-card">
+      <mat-card-title>Mensajes últimos 7 días</mat-card-title>
+      <canvas
+        baseChart
+        [data]="messagesLineData"
+        [options]="messagesLineOptions"
+        [type]="'line'"
+      ></canvas>
+    </mat-card>
+  </div>
+
+  <!-- Listas de detalle -->
+  <div class="list-cards">
+    <mat-card>
+      <mat-card-title>Top 5 cursos con más estudiantes</mat-card-title>
+      <mat-list>
+        <mat-list-item *ngFor="let course of topCourses">
+          {{ course.titulo }} - {{ course.estudiantesCount }} estudiantes
+        </mat-list-item>
+      </mat-list>
+    </mat-card>
+    <mat-card>
+      <mat-card-title>Últimos 10 usuarios logueados</mat-card-title>
+      <mat-list>
+        <mat-list-item *ngFor="let user of recentUsers">
+          {{ user.nombre }} ({{ user.rol }}) - Último acceso:
+          {{ formatDate(user.lastLogin) }}
+        </mat-list-item>
+      </mat-list>
+    </mat-card>
+  </div>
+</div>

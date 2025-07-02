@@ -1,0 +1,9 @@
+{
+  "hosting": [
+    {
+      "target": "proyecto_final_web",
+      "source": ".",
+      "frameworksBackend": {}
+    }
+  ]
+}

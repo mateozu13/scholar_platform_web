@@ -1,0 +1,62 @@
+<div class="login-container">
+  <mat-card>
+    <div class="img-content">
+      <img src="../../assets/icon.png" alt="Logo" />
+    </div>
+
+    <mat-card-title>Iniciar Sesión</mat-card-title>
+    <form #loginForm="ngForm" (ngSubmit)="login()">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <mat-icon matPrefix>person</mat-icon>
+        <input
+          matInput
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          #emailModel="ngModel"
+          required
+          email
+        />
+        <mat-error
+          *ngIf="emailModel.hasError('required') && emailModel.touched"
+        >
+          El email es requerido
+        </mat-error>
+        <mat-error *ngIf="emailModel.hasError('email') && emailModel.touched">
+          Formato de email inválido
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <mat-icon matPrefix>lock</mat-icon>
+        <input
+          matInput
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          #passModel="ngModel"
+          required
+          minlength="6"
+        />
+        <mat-error *ngIf="passModel.hasError('required') && passModel.touched">
+          La contraseña es requerida
+        </mat-error>
+        <mat-error *ngIf="passModel.hasError('minlength') && passModel.touched">
+          Mínimo 6 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="!loginForm.valid"
+      >
+        Entrar
+      </button>
+    </form>
+    <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  </mat-card>
+</div>

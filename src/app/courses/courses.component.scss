@@ -1,0 +1,39 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.course-list-container {
+  padding: 1rem;
+}
+
+/* Filtro y botón en la parte superior */
+.filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.filter-field {
+  width: 50%;
+}
+
+/* Estilos para la tabla */
+table {
+  width: 100%;
+}
+
+/* Centrar contenido de la columna de acciones */
+.actions-cell {
+  text-align: center;
+}
+
+/* Colorear estado activo/inactivo */
+.status-active {
+  color: green;
+  font-weight: 600;
+}
+.status-inactive {
+  color: red;
+  font-weight: 600;
+}

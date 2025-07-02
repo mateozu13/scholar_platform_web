@@ -1,0 +1,115 @@
+<h2 mat-dialog-title>{{ editMode ? "Editar Curso" : "Nuevo Curso" }}</h2>
+<div mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSave()">
+    <!-- Campo: Nombre del curso -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="titulo" required />
+      <mat-error *ngIf="form.get('titulo')?.hasError('required')"
+        >El nombre es requerido.</mat-error
+      >
+    </mat-form-field>
+
+    <!-- Campo: Descripción -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Descripción</mat-label>
+      <textarea
+        matInput
+        formControlName="descripcion"
+        rows="3"
+        required
+      ></textarea>
+      <mat-error *ngIf="form.get('descripcion')?.hasError('required')"
+        >La descripción es requerida.</mat-error
+      >
+    </mat-form-field>
+
+    <!-- Campo: Nivel -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nivel</mat-label>
+      <input matInput formControlName="nivel" required />
+      <mat-error *ngIf="form.get('nivel')?.hasError('required')"
+        >El nivel es requerido.</mat-error
+      >
+    </mat-form-field>
+
+    <!-- Campos de Fecha de inicio y fin en una fila -->
+    <div class="date-fields">
+      <mat-form-field appearance="fill" class="date-field">
+        <mat-label>Fecha de Inicio</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerInicio"
+          formControlName="fechaInicio"
+          placeholder="Inicio"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="pickerInicio"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerInicio></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="date-field">
+        <mat-label>Fecha de Fin</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerFin"
+          formControlName="fechaFin"
+          placeholder="Fin"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="pickerFin"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerFin></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <!-- Error de rango de fechas -->
+    <div
+      class="date-error"
+      *ngIf="
+        form.errors?.dateRangeInvalid &&
+        (form.get('fechaFin')?.touched || form.get('fechaFin')?.dirty)
+      "
+    >
+      <span class="error-text"
+        >La fecha de fin debe ser posterior a la fecha de inicio.</span
+      >
+    </div>
+
+    <!-- Campo: Activo -->
+    <mat-checkbox formControlName="activo">Activo</mat-checkbox>
+
+    <!-- Campo: Imagen del curso -->
+    <div class="image-field">
+      <label for="fileInput">Imagen del curso:</label>
+      <input
+        id="fileInput"
+        type="file"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+      />
+      <!-- Vista previa de la imagen seleccionada (o existente) -->
+      <div *ngIf="imagePreview" class="preview-container">
+        <img
+          [src]="imagePreview"
+          alt="Imagen del curso"
+          class="preview-image"
+        />
+      </div>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="form.invalid"
+    (click)="onSave()"
+  >
+    {{ editMode ? "Guardar Cambios" : "Crear Curso" }}
+  </button>
+</div>
