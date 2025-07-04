@@ -5,15 +5,21 @@ import { AuthGuard } from './guards/auth.guard';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginGuard } from './guards/login.guard';
 import { CoursesComponent } from './courses/courses.component';
+import { UserListComponent } from './users/user-list/user-list.component';
+import { ProfileComponent } from './users/profile/profile.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 const routes: Routes = [
-  // Si ya estás logueado, LoginGuard te manda a /dashboard
   {
     path: 'login',
     component: LoginComponent,
     canActivate: [LoginGuard],
   },
-  // Dashboard sólo accesible si AuthGuard permite (usuario admin)
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+  },
+
   {
     path: 'dashboard',
     component: DashboardComponent,
@@ -25,11 +31,21 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'settings',
+    component: ProfileComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'users',
+    component: UserListComponent,
+    canActivate: [AuthGuard],
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'login',
   },
-  // Cualquier otra: al login
+
   {
     path: '**',
     redirectTo: 'login',

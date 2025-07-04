@@ -1,6 +1,6 @@
 export interface Chat {
   id: string;
-  usuarios: string[]; // IDs de los dos usuarios
+  usuarios: string[];
   ultimoMensaje?: string;
   timestampUltimo?: Date;
 }

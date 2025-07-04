@@ -5,5 +5,5 @@ export interface CourseMaterial {
   urlArchivo: string;
   tipo: 'documento' | 'video' | 'presentacion' | 'otro';
   fechaPublicacion: Date;
-  publicadoPor: string; // ID del profesor
+  publicadoPor: string;
 }

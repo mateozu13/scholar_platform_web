@@ -33,11 +33,13 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSelectModule } from '@angular/material/select';
 import { CoursesComponent } from './courses/courses.component';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
@@ -45,10 +47,13 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { CourseDialogComponent } from './dialogs/course-dialog/course-dialog.component';
 import { AssignProfessorDialogComponent } from './dialogs/assign-professor-dialog/assign-professor-dialog.component';
 import { AssignStudentsDialogComponent } from './dialogs/assign-students-dialog/assign-students-dialog.component';
+import { UserListComponent } from './users/user-list/user-list.component';
+import { UserDialogComponent } from './dialogs/user-dialog/user-dialog.component';
+import { ProfileComponent } from './users/profile/profile.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 export function initFirebase(): () => void {
   return () => {
-    // Esto crea el app [DEFAULT] sólo una vez
     if (!firebase.apps.length) {
       firebase.initializeApp(environment.firebase);
     }
@@ -64,6 +69,10 @@ export function initFirebase(): () => void {
     CourseDialogComponent,
     AssignProfessorDialogComponent,
     AssignStudentsDialogComponent,
+    UserListComponent,
+    UserDialogComponent,
+    ProfileComponent,
+    ResetPasswordComponent,
   ],
   imports: [
     BrowserModule,
@@ -84,7 +93,9 @@ export function initFirebase(): () => void {
     MatListModule,
     MatDialogModule,
     MatTableModule,
+    MatProgressSpinnerModule,
     MatCheckboxModule,
+    MatGridListModule,
     MatNativeDateModule,
     MatDatepickerModule,
     MatSelectModule,
@@ -103,7 +114,6 @@ export function initFirebase(): () => void {
       multi: true,
     },
     provideClientHydration(withEventReplay()),
-    // provideCharts(withDefaultRegisterables()),
   ],
   bootstrap: [AppComponent],
 })

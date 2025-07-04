@@ -37,7 +37,6 @@ export class CourseDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Definir formulario reactivo
     this.form = this.fb.group(
       {
         titulo: ['', Validators.required],
@@ -45,16 +44,15 @@ export class CourseDialogComponent implements OnInit {
         nivel: ['', Validators.required],
         fechaInicio: [''],
         fechaFin: [''],
-        activo: [true], // Activo por defecto
+        activo: [true],
       },
       { validators: this.dateRangeValidator }
     );
 
-    // Si se proporciona un curso en data, estamos en modo edición
     if (this.data && this.data.course) {
       this.editMode = true;
       this.course = this.data.course as Course;
-      // Cargar valores existentes en el formulario
+
       this.form.patchValue({
         titulo: this.course.titulo,
         descripcion: this.course.descripcion,
@@ -71,14 +69,13 @@ export class CourseDialogComponent implements OnInit {
           : '',
         activo: this.course.activo !== undefined ? this.course.activo : true,
       });
-      // Si hay imagen existente, mostrar vista previa inicial
+
       if (this.course.imagenUrl) {
         this.imagePreview = this.course.imagenUrl;
       }
     }
   }
 
-  // Validador personalizado para verificar que fechaFin >= fechaInicio
   dateRangeValidator: ValidatorFn = (group: FormGroup) => {
     const start = group.get('fechaInicio')?.value;
     const end = group.get('fechaFin')?.value;
@@ -92,7 +89,7 @@ export class CourseDialogComponent implements OnInit {
     const fileInput = event.target as HTMLInputElement;
     if (fileInput.files && fileInput.files.length > 0) {
       this.selectedFile = fileInput.files[0];
-      // Mostrar vista previa de la imagen seleccionada
+
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result as string;
@@ -103,23 +100,20 @@ export class CourseDialogComponent implements OnInit {
 
   async onSave(): Promise<void> {
     if (this.form.invalid) {
-      // Marcar formulario como tocado para mostrar errores
       this.form.markAllAsTouched();
       return;
     }
-    // Preparar datos del curso a guardar
+
     const formValues = this.form.value;
-    let imageUrl = this.course ? this.course.imagenUrl || '' : ''; // URL de imagen existente (si edición)
+    let imageUrl = this.course ? this.course.imagenUrl || '' : '';
 
     try {
-      // Si el usuario seleccionó un nuevo archivo de imagen, subirlo a Firebase Storage
       if (this.selectedFile) {
-        // Subir archivo y obtener nueva URL
         imageUrl = await this.storageService.uploadFile(
           this.selectedFile,
           'courses'
         );
-        // Si estamos editando y el curso tenía una imagen anterior, eliminar la antigua de Storage
+
         if (this.course && this.course.imagenUrl) {
           this.storageService
             .deleteFile(this.course.imagenUrl)
@@ -130,7 +124,6 @@ export class CourseDialogComponent implements OnInit {
       }
 
       if (this.editMode && this.course) {
-        // Actualizar curso existente
         const updateData: Partial<Course> = {
           titulo: formValues.titulo,
           descripcion: formValues.descripcion,
@@ -145,7 +138,6 @@ export class CourseDialogComponent implements OnInit {
           duration: 3000,
         });
       } else {
-        // Crear nuevo curso
         const newId = firebase.firestore().collection('courses').id;
         const newCourse: Course = {
           id: newId,
@@ -171,7 +163,6 @@ export class CourseDialogComponent implements OnInit {
         });
       }
 
-      // Cerrar el diálogo y devolver un indicador de éxito
       this.dialogRef.close(true);
     } catch (error) {
       console.error('Error al guardar el curso:', error);

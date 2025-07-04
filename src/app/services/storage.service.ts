@@ -8,7 +8,6 @@ import 'firebase/compat/storage';
 export class StorageService {
   private storage = firebase.storage();
 
-  // Subir archivo
   async uploadFile(file: File, path: string): Promise<string> {
     const filePath = `${path}/${Date.now()}_${file.name}`;
     const ref = this.storage.ref(filePath);
@@ -16,7 +15,6 @@ export class StorageService {
     return ref.getDownloadURL();
   }
 
-  // Eliminar archivo
   async deleteFile(url: string): Promise<void> {
     const ref = this.storage.refFromURL(url);
     await ref.delete();

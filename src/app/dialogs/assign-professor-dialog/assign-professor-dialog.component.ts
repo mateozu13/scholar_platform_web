@@ -25,12 +25,10 @@ export class AssignProfessorDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // 1) construye form
     this.form = this.fb.group({
       profesor: [this.data.course.profesor || null, Validators.required],
     });
 
-    // 2) carga usuarios con rol 'profesor' de la colección 'Users'
     const db = firebase.firestore();
     db.collection('Users')
       .where('rol', '==', 'profesor')
@@ -49,7 +47,7 @@ export class AssignProfessorDialogComponent implements OnInit {
       return;
     }
     const profesor: User = this.form.value.profesor;
-    // Prepara datos parciales del curso
+
     const updateData: Partial<Course> = {
       profesorId: profesor.id,
       profesor: profesor,

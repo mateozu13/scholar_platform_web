@@ -25,8 +25,6 @@ export class DashboardComponent implements OnInit {
   topCourses: Course[] = [];
   recentUsers: User[] = [];
 
-  // Datos para gráficas
-
   tasksStackedOptions!: ChartOptions<'bar'>;
   messagesLineOptions!: ChartOptions<'line'>;
   rolesPieData!: ChartData<'pie', number[], string>;
@@ -44,7 +42,6 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Cargar datos de cursos y estadísticas asociadas
     this.courseService
       .getAllCourses()
       .pipe(take(1))
@@ -87,7 +84,6 @@ export class DashboardComponent implements OnInit {
         };
       });
 
-    // Cargar conteo de usuarios por rol
     this.userService
       .getUsersCountByRole()
       .pipe(take(1))
@@ -123,7 +119,6 @@ export class DashboardComponent implements OnInit {
       .getDailyMessageCounts(7)
       .pipe(take(1))
       .subscribe((counts) => {
-        // Calcular promedio diario de mensajes
         const totalMessages = counts.reduce((sum, num) => sum + num, 0);
         this.avgMessagesPerDay7d = counts.length
           ? Number((totalMessages / counts.length).toFixed(2))
@@ -152,7 +147,6 @@ export class DashboardComponent implements OnInit {
   }
 
   logout(): void {
-    // Cierra sesión utilizando el servicio de autenticación
     this.authService.logout();
   }
 
@@ -163,12 +157,10 @@ export class DashboardComponent implements OnInit {
 
     let jsDate: Date;
 
-    // Si viene como { seconds: number, nanoseconds: number }
     if (date.seconds !== undefined && date.nanoseconds !== undefined) {
       const millis = date.seconds * 1000 + Math.floor(date.nanoseconds / 1e6);
       jsDate = new Date(millis);
     } else {
-      // Si es un string ISO o un objeto Date
       jsDate = new Date(date);
     }
 

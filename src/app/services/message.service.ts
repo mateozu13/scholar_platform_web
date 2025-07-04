@@ -6,7 +6,6 @@ import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class MessageService {
-  // Conteo de mensajes por día en los últimos `days` días
   getDailyMessageCounts(days: number): Observable<number[]> {
     const today = new Date();
     const startDate = new Date();
@@ -23,13 +22,11 @@ export class MessageService {
         const counts = Array(days).fill(0);
         snapshot.docs.forEach((doc) => {
           const data = doc.data() as any;
-          // `data.timestamp` es un Timestamp de Firestore
           const date: Date = data.timestamp.toDate();
           const diff = Math.floor(
             (today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
           );
           if (diff < days) {
-            // Índice: 0 = hace days-1 días, último = hoy
             counts[days - diff - 1]++;
           }
         });

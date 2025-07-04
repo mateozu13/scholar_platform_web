@@ -7,15 +7,15 @@ export interface Course {
   profesorId: string;
   profesor?: User;
   estudiantes?: User[];
-  estudiantesCount?: number; // Campo calculado (número de estudiantes)
+  estudiantesCount?: number;
   fechaInicio?: Date;
   fechaFin?: Date;
   nivel?: string;
   imagenUrl?: string;
-  assignmentsCount?: number; // Campo calculado
-  completedAssignments?: number; // Campo calculado
-  deliveredSubmissions?: number; // Campo calculado
-  pendingSubmissions?: number; // Campo calculado
+  assignmentsCount?: number;
+  completedAssignments?: number;
+  deliveredSubmissions?: number;
+  pendingSubmissions?: number;
   avgGrade?: number;
-  activo?: boolean; // Campo añadido para indicar si el curso está activo
+  activo?: boolean;
 }

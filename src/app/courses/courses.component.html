@@ -1,19 +1,20 @@
-<mat-toolbar color="primary">
-  <span>Administración</span>
+<mat-toolbar color="primary" class="toolbar">
+  <span class="title">Configuración de Perfil</span>
   <span class="spacer"></span>
-
-  <button mat-button routerLink="/dashboard">
-    <mat-icon>dashboard_2</mat-icon>
-    Dashboard
+  <button mat-icon-button routerLink="/dashboard" matTooltip="Dashboard">
+    <mat-icon>dashboard</mat-icon>
   </button>
-
-  <button mat-button routerLink="/courses">
-    <mat-icon>menu_book</mat-icon>
-    Cursos
+  <button mat-icon-button routerLink="/users" matTooltip="Usuarios">
+    <mat-icon>people</mat-icon>
   </button>
-  <button mat-button (click)="logout()">
-    <mat-icon>exit_to_app</mat-icon>
-    Salir
+  <button mat-icon-button routerLink="/courses" matTooltip="Cursos">
+    <mat-icon>school</mat-icon>
+  </button>
+  <button mat-icon-button routerLink="/settings" matTooltip="Configuración">
+    <mat-icon>settings</mat-icon>
+  </button>
+  <button mat-icon-button (click)="logout()" matTooltip="Salir">
+    <mat-icon>logout</mat-icon>
   </button>
 </mat-toolbar>
 

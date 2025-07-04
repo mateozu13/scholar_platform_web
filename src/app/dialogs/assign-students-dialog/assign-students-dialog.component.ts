@@ -41,7 +41,7 @@ export class AssignStudentsDialogComponent implements OnInit {
           return { id: doc.id, ...u };
         });
         this.dataSource.data = students;
-        // preseleccionar los ya asignados
+
         if (this.data.course.estudiantes) {
           students.forEach((s) => {
             if (this.data.course.estudiantes!.find((e) => e.id === s.id)) {
@@ -49,7 +49,7 @@ export class AssignStudentsDialogComponent implements OnInit {
             }
           });
         }
-        // asignar paginador y sort
+
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       })

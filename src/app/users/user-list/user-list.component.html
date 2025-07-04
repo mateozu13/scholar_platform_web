@@ -1,0 +1,145 @@
+<mat-toolbar color="primary" class="toolbar">
+  <span class="title">Configuración de Perfil</span>
+  <span class="spacer"></span>
+  <button mat-icon-button routerLink="/dashboard" matTooltip="Dashboard">
+    <mat-icon>dashboard</mat-icon>
+  </button>
+  <button mat-icon-button routerLink="/users" matTooltip="Usuarios">
+    <mat-icon>people</mat-icon>
+  </button>
+  <button mat-icon-button routerLink="/courses" matTooltip="Cursos">
+    <mat-icon>school</mat-icon>
+  </button>
+  <button mat-icon-button routerLink="/settings" matTooltip="Configuración">
+    <mat-icon>settings</mat-icon>
+  </button>
+  <button mat-icon-button (click)="logout()" matTooltip="Salir">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="user-list">
+  <div class="header">
+    <h2>Usuarios</h2>
+    <button mat-raised-button color="primary" (click)="createUser()">
+      Nuevo Usuario
+    </button>
+  </div>
+
+  <mat-form-field appearance="outline" class="filter">
+    <mat-label>Buscar</mat-label>
+    <input
+      #filterInput
+      matInput
+      type="text"
+      (keyup)="applyFilter(filterInput.value)"
+      placeholder="Nombre, email, rol"
+    />
+    <button
+      mat-button
+      *ngIf="dataSource.filter"
+      matSuffix
+      mat-icon-button
+      (click)="applyFilter('')"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+    <!-- Creacion -->
+    <ng-container matColumnDef="creado">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Creado</th>
+      <td mat-cell *matCellDef="let u">
+        {{ u.createdAt.toDate().toLocaleDateString("en-GB") }} -
+        {{ u.createdAt.toDate().toLocaleTimeString("en-GB") }}
+      </td>
+    </ng-container>
+
+    <!-- Nombre -->
+    <ng-container matColumnDef="nombre">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+      <td mat-cell *matCellDef="let u">{{ u.nombre }}</td>
+    </ng-container>
+
+    <!-- Email -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+      <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+    </ng-container>
+
+    <!-- Rol -->
+    <ng-container matColumnDef="rol">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
+      <td mat-cell *matCellDef="let u">{{ u.rol }}</td>
+    </ng-container>
+
+    <!-- Cursos Inscritos -->
+    <ng-container matColumnDef="cursosInscritos">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Inscripciones</th>
+      <td mat-cell *matCellDef="let u">{{ u.cursosInscritosCount }}</td>
+    </ng-container>
+
+    <!-- Cursos Dictados -->
+    <ng-container matColumnDef="cursosDictados">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Dictados</th>
+      <td mat-cell *matCellDef="let u">{{ u.cursosDictadosCount }}</td>
+    </ng-container>
+
+    <!-- Activo -->
+    <ng-container matColumnDef="active">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Activo</th>
+      <td mat-cell *matCellDef="let u">
+        <mat-icon
+          class="material-symbols-outlined"
+          [style]="u.active ? 'color: #1ea22f' : 'color: #e82d2d '"
+        >
+          {{ u.active ? "account_circle" : "account_circle_off" }}
+        </mat-icon>
+      </td>
+    </ng-container>
+
+    <!-- Acciones -->
+    <ng-container matColumnDef="acciones">
+      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+      <td mat-cell *matCellDef="let u">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="editUser(u)"
+          matTooltip="Editar"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          *ngIf="u.active"
+          mat-icon-button
+          style="color: #eb6c6c"
+          (click)="changeUserStatus(u)"
+          matTooltip="Inactivar"
+        >
+          <mat-icon class="material-symbols-outlined"> lock_person</mat-icon>
+        </button>
+        <button
+          *ngIf="!u.active"
+          mat-icon-button
+          style="color: rgb(82, 227, 82)"
+          (click)="changeUserStatus(u)"
+          matTooltip="Activar"
+        >
+          <mat-icon class="material-symbols-outlined">
+            lock_open_right</mat-icon
+          >
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 20]"
+    showFirstLastButtons
+  ></mat-paginator>
+</div>

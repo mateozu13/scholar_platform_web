@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 @Component({
   selector: 'app-login',
@@ -9,23 +11,21 @@ import { AuthService } from '../services/auth.service';
   standalone: false,
 })
 export class LoginComponent {
-  email: string = '';
-  password: string = '';
-  errorMessage: string = '';
+  email = '';
+  password = '';
+  errorMessage = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private router: Router) {}
 
-  login(): void {
+  async login() {
     this.errorMessage = '';
-    this.authService
-      .login(this.email, this.password)
-      .then(() => {
-        // Si la autenticación es exitosa, navega al dashboard de administrador
-        this.router.navigate(['/dashboard']);
-      })
-      .catch((error) => {
-        // Muestra el mensaje de error en caso de fallo
-        this.errorMessage = error.message;
-      });
+    try {
+      await firebase
+        .auth()
+        .signInWithEmailAndPassword(this.email, this.password);
+      this.router.navigate(['/dashboard']);
+    } catch (err: any) {
+      this.errorMessage = err.message;
+    }
   }
 }

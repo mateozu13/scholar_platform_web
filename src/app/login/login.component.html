@@ -1,12 +1,14 @@
 <div class="login-container">
-  <mat-card>
-    <div class="img-content">
-      <img src="../../assets/icon.png" alt="Logo" />
+  <mat-card class="login-card mat-elevation-z8">
+    <div class="logo">
+      <img src="../../assets/icon.png" alt="Logo Plataforma" />
     </div>
 
-    <mat-card-title>Iniciar Sesión</mat-card-title>
+    <mat-card-title>Bienvenido</mat-card-title>
+    <mat-card-subtitle>Inicia sesión para continuar</mat-card-subtitle>
+
     <form #loginForm="ngForm" (ngSubmit)="login()">
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
         <mat-icon matPrefix>person</mat-icon>
         <input
@@ -14,21 +16,15 @@
           type="email"
           name="email"
           [(ngModel)]="email"
-          #emailModel="ngModel"
+          #e="ngModel"
           required
           email
         />
-        <mat-error
-          *ngIf="emailModel.hasError('required') && emailModel.touched"
-        >
-          El email es requerido
-        </mat-error>
-        <mat-error *ngIf="emailModel.hasError('email') && emailModel.touched">
-          Formato de email inválido
-        </mat-error>
+        <mat-error *ngIf="e.hasError('required')">Requerido</mat-error>
+        <mat-error *ngIf="e.hasError('email')">Email inválido</mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Contraseña</mat-label>
         <mat-icon matPrefix>lock</mat-icon>
         <input
@@ -36,27 +32,31 @@
           type="password"
           name="password"
           [(ngModel)]="password"
-          #passModel="ngModel"
+          #p="ngModel"
           required
           minlength="6"
         />
-        <mat-error *ngIf="passModel.hasError('required') && passModel.touched">
-          La contraseña es requerida
-        </mat-error>
-        <mat-error *ngIf="passModel.hasError('minlength') && passModel.touched">
-          Mínimo 6 caracteres
-        </mat-error>
+        <mat-error *ngIf="p.hasError('required')">Requerido</mat-error>
+        <mat-error *ngIf="p.hasError('minlength')"
+          >Mínimo 6 caracteres</mat-error
+        >
       </mat-form-field>
 
       <button
         mat-raised-button
         color="primary"
+        class="full-width"
         type="submit"
         [disabled]="!loginForm.valid"
       >
         Entrar
       </button>
     </form>
+
+    <div class="forgot">
+      <a routerLink="/reset-password">¿Olvidaste tu contraseña?</a>
+    </div>
+
     <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
   </mat-card>
 </div>

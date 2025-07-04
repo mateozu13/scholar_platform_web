@@ -6,7 +6,6 @@ import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class SubmissionService {
-  // Cantidad de entregas tardías
   getLateSubmissionsCount(): Observable<number> {
     return from(
       firebase

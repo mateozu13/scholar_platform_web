@@ -42,13 +42,11 @@ export class CoursesComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    // Suscribirse a la lista de cursos desde Firestore a través del servicio
     this.courseService.getCourses().subscribe((courses) => {
-      // Asegurar que cada curso tenga el campo estudiantesCount y activo inicializado
       courses.forEach((c) => {
         c.estudiantesCount = c.estudiantes ? c.estudiantes.length : 0;
         if (c.activo === undefined) {
-          c.activo = true; // asumir activo por defecto si no está establecido
+          c.activo = true;
         }
       });
       this.dataSource.data = courses;
@@ -56,11 +54,9 @@ export class CoursesComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Configurar paginador y ordenamiento una vez que la vista está inicializada
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
 
-    // Configurar la lógica de ordenamiento para columnas personalizadas
     this.dataSource.sortingDataAccessor = (
       course: Course,
       property: string
@@ -73,15 +69,13 @@ export class CoursesComponent implements OnInit, AfterViewInit {
         case 'estudiantes':
           return course.estudiantesCount || 0;
         case 'estado':
-          return course.activo ? 1 : 0; // Inactivo (0) antes que Activo (1)
+          return course.activo ? 1 : 0;
         default:
-          // Por defecto ordenar por la propiedad directamente (asumiendo string/number)
           const value = (course as any)[property];
           return typeof value === 'string' ? value.toLowerCase() : value;
       }
     };
 
-    // Configurar filtro de búsqueda (buscará en nombre, descripción, nivel y nombre de profesor)
     this.dataSource.filterPredicate = (data: Course, filter: string) => {
       const term = filter.trim().toLowerCase();
       return (
@@ -103,7 +97,7 @@ export class CoursesComponent implements OnInit, AfterViewInit {
   openCreateCourse(): void {
     this.dialog.open(CourseDialogComponent, {
       width: '600px',
-      data: {}, // sin curso en los datos significa creación
+      data: {},
     });
   }
 
@@ -129,9 +123,7 @@ export class CoursesComponent implements OnInit, AfterViewInit {
   }
 
   deleteCourse(course: Course): void {
-    // Verificar si se puede eliminar (curso inactivo o sin estudiantes)
     if (course.activo && (course.estudiantesCount || 0) > 0) {
-      // Si está activo y tiene estudiantes, no permitir eliminar
       this.snackBar.open(
         'No se puede eliminar un curso activo con estudiantes.',
         'Cerrar',
@@ -146,7 +138,6 @@ export class CoursesComponent implements OnInit, AfterViewInit {
       this.courseService
         .deleteCourse(course.id)
         .then(() => {
-          // Si el curso tiene una imagen, eliminarla de Storage
           if (course.imagenUrl) {
             this.storageService
               .deleteFile(course.imagenUrl)
@@ -168,7 +159,6 @@ export class CoursesComponent implements OnInit, AfterViewInit {
   }
 
   logout(): void {
-    // Cierra sesión utilizando el servicio de autenticación
     this.authService.logout();
   }
 }

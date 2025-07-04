@@ -1,40 +1,60 @@
 .login-container {
+  height: 100vh;
   display: flex;
-  align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background: linear-gradient(to right, #1976d2, #42a5f5);
-}
+  align-items: center;
+  background: #548fef;
 
-mat-card {
-  padding: 2rem;
-  width: 100%;
-  max-width: 460px;
-  text-align: center;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-  img {
-    width: 135px;
+  .login-card {
+    width: 100%;
+    max-width: 430px;
+    padding: 32px;
+    border-radius: 16px;
     text-align: center;
+    background: #fff;
+
+    .logo {
+      margin-bottom: 24px;
+      img {
+        width: 120px;
+        height: 120px;
+      }
+    }
+
+    mat-card-title {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    mat-card-subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    .full-width {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .forgot {
+      margin-top: 16px;
+      a {
+        font-size: 14px;
+        color: #1e88e5;
+        text-decoration: none;
+      }
+    }
+
+    .error {
+      margin-top: 16px;
+      color: #b00020;
+      font-size: 14px;
+      font-weight: 500;
+    }
   }
-}
-
-.img-content {
-  margin-bottom: 18px;
-}
-
-mat-card-title {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-mat-form-field {
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.error {
-  color: #d32f2f;
-  margin-top: 1rem;
 }

@@ -1,0 +1,57 @@
+<h2 mat-dialog-title>
+  {{ editMode ? "Editar Usuario" : "Nuevo Usuario" }}
+</h2>
+<mat-dialog-content [formGroup]="form">
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Nombre</mat-label>
+    <input matInput formControlName="nombre" required />
+    <mat-error *ngIf="form.get('nombre')?.hasError('required')"
+      >Requerido</mat-error
+    >
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" required [readonly]="editMode" />
+    <mat-error *ngIf="form.get('email')?.hasError('required')"
+      >Requerido</mat-error
+    >
+    <mat-error *ngIf="form.get('email')?.hasError('email')"
+      >Email inválido</mat-error
+    >
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Rol</mat-label>
+    <mat-select formControlName="rol" required>
+      <mat-option *ngFor="let r of roles" [value]="r">{{ r }}</mat-option>
+    </mat-select>
+    <mat-error *ngIf="form.get('rol')?.hasError('required')"
+      >Requerido</mat-error
+    >
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Teléfono</mat-label>
+    <input matInput formControlName="telefono" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Bio</mat-label>
+    <textarea matInput formControlName="bio" rows="3"></textarea>
+  </mat-form-field>
+
+  <mat-checkbox formControlName="active">Activo</mat-checkbox>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="save()"
+    [disabled]="form.invalid"
+  >
+    {{ editMode ? "Guardar" : "Crear" }}
+  </button>
+</mat-dialog-actions>

@@ -12,9 +12,11 @@ export interface User {
   lastLogin?: Date;
   active: boolean;
 
-  progresoGlobal?: number; // % de progreso general
-  promedioCalificaciones?: number; // Promedio de calificaciones
-  tareasCompletadas?: number; // Conteo de tareas completadas
+  cursosInscritosCount?: number;
+  cursosDictadosCount?: number;
+  progresoGlobal?: number;
+  promedioCalificaciones?: number;
+  tareasCompletadas?: number;
 }
 
 export type UserRole = User['rol'];

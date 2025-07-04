@@ -1,0 +1,261 @@
+<mat-toolbar color="primary" class="toolbar">
+  <span class="title">Configuración de Perfil</span>
+  <span class="spacer"></span>
+  <button mat-icon-button routerLink="/dashboard" matTooltip="Dashboard">
+    <mat-icon>dashboard</mat-icon>
+  </button>
+  <button mat-icon-button routerLink="/users" matTooltip="Usuarios">
+    <mat-icon>people</mat-icon>
+  </button>
+  <button mat-icon-button routerLink="/courses" matTooltip="Cursos">
+    <mat-icon>school</mat-icon>
+  </button>
+  <button mat-icon-button routerLink="/settings" matTooltip="Configuración">
+    <mat-icon>settings</mat-icon>
+  </button>
+  <button mat-icon-button (click)="logout()" matTooltip="Salir">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="profile-wrapper">
+  <mat-progress-spinner
+    *ngIf="isLoading"
+    mode="indeterminate"
+    diameter="50"
+    color="accent"
+    class="spinner"
+  ></mat-progress-spinner>
+
+  <div *ngIf="!isLoading" class="profile-content">
+    <div class="profile-header">
+      <div class="avatar-section">
+        <div
+          class="avatar-container"
+          [style.background-color]="getAvatarColor()"
+        >
+          <div class="avatar">
+            <img *ngIf="profileImageUrl" [src]="profileImageUrl" alt="Avatar" />
+            <span *ngIf="!profileImageUrl" class="avatar-fallback">
+              {{ currentUser.nombre.charAt(0).toUpperCase() }}
+            </span>
+          </div>
+          <input
+            #fileInput
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="onFileSelected($event)"
+          />
+          <button
+            mat-fab
+            class="change-photo-btn"
+            color="accent"
+            (click)="fileInput.click()"
+            matTooltip="Cambiar foto"
+          >
+            <mat-icon>photo_camera</mat-icon>
+          </button>
+        </div>
+        <div class="user-info">
+          <h1>{{ currentUser.nombre }}</h1>
+          <mat-chip color="accent" class="role-chip">{{
+            currentUser.rol | titlecase
+          }}</mat-chip>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-body">
+      <div class="left-section">
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>Información de la Cuenta</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-item">
+              <mat-icon>email</mat-icon>
+              <span>{{ currentUser.email }}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>calendar_today</mat-icon>
+              <span>Registrado: {{ formatDate(currentUser.createdAt) }}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>fingerprint</mat-icon>
+              <span>ID: {{ currentUser.id }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stats-card">
+          <mat-card-header>
+            <mat-card-title>Estadísticas</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="currentUser.rol === 'estudiante'" class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-value">{{ stats.enrolledCourses }}</div>
+                <div class="stat-label">Cursos Inscritos</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ stats.completedAssignments }}</div>
+                <div class="stat-label">Tareas Completadas</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ stats.averageGrade }}%</div>
+                <div class="stat-label">Promedio</div>
+              </div>
+            </div>
+
+            <div *ngIf="currentUser.rol === 'profesor'" class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-value">{{ stats.taughtCourses }}</div>
+                <div class="stat-label">Cursos Dictados</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ stats.createdAssignments }}</div>
+                <div class="stat-label">Tareas Creadas</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ stats.studentsTaught }}</div>
+                <div class="stat-label">Estudiantes</div>
+              </div>
+            </div>
+
+            <div *ngIf="currentUser.rol === 'admin'" class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-value">{{ stats.totalUsers }}</div>
+                <div class="stat-label">Usuarios</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ stats.totalCourses }}</div>
+                <div class="stat-label">Cursos</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="right-section">
+        <mat-card class="form-card">
+          <mat-card-header>
+            <mat-card-title>Información Personal</mat-card-title>
+            <button
+              mat-icon-button
+              (click)="isEditing = !isEditing"
+              class="edit-btn"
+            >
+              <mat-icon>{{ isEditing ? "close" : "edit" }}</mat-icon>
+            </button>
+          </mat-card-header>
+          <mat-card-content>
+            <form
+              [formGroup]="profileForm"
+              style="gap: 24px; display: flex; align-items: flex-start"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="telefono" />
+                <mat-icon matPrefix>phone</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Biografía</mat-label>
+                <textarea matInput formControlName="bio" rows="4"></textarea>
+                <mat-icon matPrefix>info</mat-icon>
+              </mat-form-field>
+            </form>
+
+            <div class="actions" *ngIf="isEditing">
+              <button mat-button (click)="isEditing = false">Cancelar</button>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="saveProfile()"
+                [disabled]="profileForm.invalid"
+              >
+                Guardar Cambios
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="security-card">
+          <mat-card-header>
+            <mat-card-title>Seguridad</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="!isPasswordEditing" class="security-content">
+              <p>
+                Actualiza tu contraseña regularmente para mantener tu cuenta
+                segura
+              </p>
+              <button
+                mat-raised-button
+                color="warn"
+                (click)="isPasswordEditing = true"
+              >
+                Cambiar Contraseña
+              </button>
+            </div>
+
+            <div *ngIf="isPasswordEditing">
+              <form
+                [formGroup]="passwordForm"
+                style="display: flex; gap: 12px 16px; margin-top: 24px"
+              >
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Contraseña Actual</mat-label>
+                  <input
+                    matInput
+                    type="password"
+                    formControlName="currentPassword"
+                  />
+                  <mat-icon matPrefix>lock</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Nueva Contraseña</mat-label>
+                  <input
+                    matInput
+                    type="password"
+                    formControlName="newPassword"
+                  />
+                  <mat-icon matPrefix>vpn_key</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Confirmar Contraseña</mat-label>
+                  <input
+                    matInput
+                    type="password"
+                    formControlName="confirmPassword"
+                  />
+                  <mat-icon matPrefix>vpn_key</mat-icon>
+                  <mat-error *ngIf="passwordForm.hasError('notSame')">
+                    Las contraseñas no coinciden
+                  </mat-error>
+                </mat-form-field>
+              </form>
+
+              <div class="actions">
+                <button mat-button (click)="isPasswordEditing = false">
+                  Cancelar
+                </button>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="changePassword()"
+                  [disabled]="passwordForm.invalid"
+                >
+                  Actualizar Contraseña
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>
