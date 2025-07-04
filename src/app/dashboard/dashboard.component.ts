@@ -102,9 +102,9 @@ export class DashboardComponent implements OnInit {
         };
       });
 
-    // Cargar lista de últimos 10 usuarios logueados
+    // Cargar lista de últimos 5 usuarios logueados
     this.userService
-      .getRecentUsers(10)
+      .getRecentUsers(5)
       .pipe(take(1))
       .subscribe((users) => {
         this.recentUsers = users;
