@@ -18,20 +18,20 @@ import { User } from '../models/user.model';
 })
 export class DashboardComponent implements OnInit {
   totalCourses: number = 0;
-  userCounts = { admin: 0, profesor: 0, estudiante: 0 };
-  lateSubmissionsCount: number = 0;
-  avgMessagesPerDay7d: number = 0;
+  totalUsers: number = 0;
+  pendingSubmissions: number = 0;
+  activeCourses: number = 0;
 
-  topCourses: Course[] = [];
   recentUsers: User[] = [];
+  recentCourses: Course[] = [];
 
-  tasksStackedOptions!: ChartOptions<'bar'>;
-  messagesLineOptions!: ChartOptions<'line'>;
   rolesPieData!: ChartData<'pie', number[], string>;
   studentsBarData!: ChartData<'bar', number[], string>;
   tasksStackedData!: ChartData<'bar', number[], string>;
-  gradesBarData!: ChartData<'bar', number[], string>;
   messagesLineData!: ChartData<'line', number[], string>;
+
+  tasksStackedOptions!: ChartOptions<'bar'>;
+  messagesLineOptions!: ChartOptions<'line'>;
 
   constructor(
     private authService: AuthService,
@@ -42,33 +42,93 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadSummaryData();
+    this.loadCharts();
+    this.loadRecentData();
+  }
+
+  loadSummaryData() {
+    // Total de cursos
     this.courseService
       .getAllCourses()
       .pipe(take(1))
       .subscribe((courses) => {
         this.totalCourses = courses.length;
-        // Top 5 cursos con más estudiantes
-        this.topCourses = [...courses]
-          .sort((a, b) => b.estudiantesCount - a.estudiantesCount)
-          .slice(0, 5);
-        // Gráfico de barras: número de estudiantes por curso (top 5)
-        const topNames = this.topCourses.map((c) => c.titulo);
-        const topCounts = this.topCourses.map((c) => c.estudiantesCount);
-        this.studentsBarData = {
-          labels: topNames,
-          datasets: [{ label: 'Estudiantes', data: topCounts }],
+        this.activeCourses = courses.filter((c) => c.activo).length;
+      });
+
+    // Total de usuarios
+    this.userService
+      .getUsersCountByRole()
+      .pipe(take(1))
+      .subscribe((counts) => {
+        this.totalUsers = counts.admin + counts.profesor + counts.estudiante;
+      });
+
+    // Entregas pendientes
+    this.submissionService
+      .getPendingSubmissionsCount()
+      .pipe(take(1))
+      .subscribe((count) => {
+        this.pendingSubmissions = count;
+      });
+  }
+
+  loadCharts() {
+    // Gráfico de pastel: distribución de roles
+    this.userService
+      .getUsersCountByRole()
+      .pipe(take(1))
+      .subscribe((counts) => {
+        this.rolesPieData = {
+          labels: ['Administradores', 'Profesores', 'Estudiantes'],
+          datasets: [
+            {
+              data: [counts.admin, counts.profesor, counts.estudiante],
+              backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+            },
+          ],
         };
-        // Gráfico de barras apiladas: entregas vs pendientes por curso
+      });
+
+    // Gráfico de barras: top cursos por estudiantes
+    this.courseService
+      .getTopCoursesByStudents(5)
+      .pipe(take(1))
+      .subscribe((courses) => {
+        this.studentsBarData = {
+          labels: courses.map((c) => c.titulo),
+          datasets: [
+            {
+              label: 'Estudiantes',
+              data: courses.map((c) => c.estudiantesCount),
+              backgroundColor: '#4CAF50',
+            },
+          ],
+        };
+      });
+
+    // Gráfico de barras apiladas: estado de tareas (entregadas vs pendientes)
+    this.courseService
+      .getAllCourses()
+      .pipe(take(1))
+      .subscribe((courses) => {
         const courseNames = courses.map((c) => c.titulo);
         const delivered = courses.map((c) => c.deliveredSubmissions || 0);
         const pending = courses.map((c) => c.pendingSubmissions || 0);
+
         this.tasksStackedData = {
           labels: courseNames,
           datasets: [
-            { label: 'Entregadas', data: delivered, stack: 'total' },
-            { label: 'Pendientes', data: pending, stack: 'total' },
+            {
+              label: 'Entregadas',
+              data: delivered,
+              backgroundColor: '#36A2EB',
+            },
+            { label: 'Pendientes', data: pending, backgroundColor: '#FF6384' },
           ],
         };
+
         this.tasksStackedOptions = {
           responsive: true,
           scales: {
@@ -76,54 +136,13 @@ export class DashboardComponent implements OnInit {
             y: { stacked: true, beginAtZero: true },
           },
         };
-        // Gráfico de barras: promedio de calificaciones por curso
-        const avgGrades = courses.map((c) => c.avgGrade || 0);
-        this.gradesBarData = {
-          labels: courseNames,
-          datasets: [{ label: 'Promedio', data: avgGrades }],
-        };
       });
 
-    this.userService
-      .getUsersCountByRole()
-      .pipe(take(1))
-      .subscribe((counts) => {
-        this.userCounts = counts;
-        // Gráfico de pastel: proporción de usuarios por rol
-        this.rolesPieData = {
-          labels: ['Administradores', 'Profesores', 'Estudiantes'],
-          datasets: [
-            { data: [counts.admin, counts.profesor, counts.estudiante] },
-          ],
-        };
-      });
-
-    // Cargar lista de últimos 5 usuarios logueados
-    this.userService
-      .getRecentUsers(5)
-      .pipe(take(1))
-      .subscribe((users) => {
-        this.recentUsers = users;
-      });
-
-    // Cargar cantidad de entregas tardías
-    this.submissionService
-      .getLateSubmissionsCount()
-      .pipe(take(1))
-      .subscribe((count) => {
-        this.lateSubmissionsCount = count;
-      });
-
-    // Cargar datos de mensajes de los últimos 7 días
+    // Gráfico de línea: actividad de mensajes
     this.messageService
       .getDailyMessageCounts(7)
       .pipe(take(1))
       .subscribe((counts) => {
-        const totalMessages = counts.reduce((sum, num) => sum + num, 0);
-        this.avgMessagesPerDay7d = counts.length
-          ? Number((totalMessages / counts.length).toFixed(2))
-          : 0;
-        // Gráfico de línea: mensajes por día (últimos 7 días)
         const today = new Date();
         const labels = counts.map((_, i) => {
           const date = new Date();
@@ -133,16 +152,42 @@ export class DashboardComponent implements OnInit {
             day: 'numeric',
           });
         });
+
         this.messagesLineData = {
           labels: labels,
           datasets: [
-            { label: 'Mensajes', data: counts, fill: false, tension: 0.3 },
+            {
+              label: 'Mensajes',
+              data: counts,
+              fill: false,
+              borderColor: '#FFCE56',
+              tension: 0.3,
+            },
           ],
         };
+
         this.messagesLineOptions = {
           responsive: true,
           scales: { y: { beginAtZero: true } },
         };
+      });
+  }
+
+  loadRecentData() {
+    // Últimos usuarios registrados
+    this.userService
+      .getRecentUsers(5)
+      .pipe(take(1))
+      .subscribe((users) => {
+        this.recentUsers = users;
+      });
+
+    // Últimos cursos creados
+    this.courseService
+      .getRecentCourses(5)
+      .pipe(take(1))
+      .subscribe((courses) => {
+        this.recentCourses = courses;
       });
   }
 
@@ -151,30 +196,47 @@ export class DashboardComponent implements OnInit {
   }
 
   formatDate(date: any): string {
-    if (!date) {
-      return 'No disponible';
-    }
+    if (!date) return 'No disponible';
 
     let jsDate: Date;
-
     if (date.seconds !== undefined && date.nanoseconds !== undefined) {
-      const millis = date.seconds * 1000 + Math.floor(date.nanoseconds / 1e6);
-      jsDate = new Date(millis);
+      jsDate = new Date(date.seconds * 1000 + date.nanoseconds / 1000000);
+    } else if (date instanceof Date) {
+      jsDate = date;
     } else {
       jsDate = new Date(date);
     }
 
-    if (isNaN(jsDate.getTime())) {
-      return 'No disponible';
-    }
+    if (isNaN(jsDate.getTime())) return 'No disponible';
 
     return jsDate.toLocaleDateString('es-ES', {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
     });
+  }
+
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.split(' ');
+    return parts
+      .map((p) => p[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  }
+
+  getAvatarColor(name: string): string {
+    if (!name) return '#3f51b5'; // Color por defecto
+    const colors = [
+      '#3f51b5',
+      '#673ab7',
+      '#009688',
+      '#ff5722',
+      '#e91e63',
+      '#2196f3',
+    ];
+    const index = (name.charCodeAt(0) + (name.length || 0)) % colors.length;
+    return colors[index];
   }
 }

@@ -6,12 +6,15 @@ import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class SubmissionService {
-  getLateSubmissionsCount(): Observable<number> {
+  private db = firebase.firestore();
+
+  constructor() {}
+
+  getPendingSubmissionsCount(): Observable<number> {
     return from(
-      firebase
-        .firestore()
+      this.db
         .collection('submissions')
-        .where('late', '==', true)
+        .where('calificacion', '==', null) // Entregas sin calificar
         .get()
     ).pipe(map((snapshot) => snapshot.size));
   }

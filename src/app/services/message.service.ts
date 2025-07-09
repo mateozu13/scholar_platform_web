@@ -6,28 +6,35 @@ import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class MessageService {
+  constructor() {}
+
   getDailyMessageCounts(days: number): Observable<number[]> {
     const today = new Date();
-    const startDate = new Date();
+    const startDate = new Date(today);
     startDate.setDate(today.getDate() - days + 1);
+    startDate.setHours(0, 0, 0, 0);
 
     return from(
       firebase
         .firestore()
-        .collection('messages')
-        .where('timestamp', '>=', startDate)
+        .collectionGroup('messages')
+        .where(
+          'timestamp',
+          '>=',
+          firebase.firestore.Timestamp.fromDate(startDate)
+        )
         .get()
     ).pipe(
       map((snapshot) => {
-        const counts = Array(days).fill(0);
+        const counts = new Array(days).fill(0);
         snapshot.docs.forEach((doc) => {
-          const data = doc.data() as any;
-          const date: Date = data.timestamp.toDate();
-          const diff = Math.floor(
-            (today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+          const message = doc.data() as any;
+          const date = message.timestamp.toDate();
+          const dayIndex = Math.floor(
+            (date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
           );
-          if (diff < days) {
-            counts[days - diff - 1]++;
+          if (dayIndex >= 0 && dayIndex < days) {
+            counts[dayIndex]++;
           }
         });
         return counts;

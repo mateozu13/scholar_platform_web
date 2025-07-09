@@ -1,5 +1,6 @@
+<!-- dashboard.component.html -->
 <mat-toolbar color="primary" class="toolbar">
-  <span class="title">Configuración de Perfil</span>
+  <span class="title">Panel de Administración</span>
   <span class="spacer"></span>
   <button mat-icon-button routerLink="/dashboard" matTooltip="Dashboard">
     <mat-icon>dashboard</mat-icon>
@@ -19,81 +20,116 @@
 </mat-toolbar>
 
 <div class="dashboard-container">
-  <!-- Tarjetas de resumen -->
+  <!-- Resumen de KPIs -->
   <div class="summary-cards">
     <mat-card class="summary-card">
-      <mat-card-title>Total de cursos</mat-card-title>
-      <mat-card-content>{{ totalCourses }}</mat-card-content>
+      <mat-card-title>Total de Cursos</mat-card-title>
+      <mat-card-content class="large-number">{{
+        totalCourses
+      }}</mat-card-content>
     </mat-card>
     <mat-card class="summary-card">
-      <mat-card-title>Total de usuarios</mat-card-title>
-      <mat-card-content>
-        Admin: {{ userCounts.admin }}, Profesor: {{ userCounts.profesor }},
-        Estudiante: {{ userCounts.estudiante }}
-      </mat-card-content>
+      <mat-card-title>Total de Usuarios</mat-card-title>
+      <mat-card-content class="large-number">{{ totalUsers }}</mat-card-content>
     </mat-card>
     <mat-card class="summary-card">
-      <mat-card-title>Entregas tardías</mat-card-title>
-      <mat-card-content>{{ lateSubmissionsCount }}</mat-card-content>
+      <mat-card-title>Entregas Pendientes</mat-card-title>
+      <mat-card-content class="large-number">{{
+        pendingSubmissions
+      }}</mat-card-content>
     </mat-card>
     <mat-card class="summary-card">
-      <mat-card-title>Mensajes (promedio diario 7 días)</mat-card-title>
-      <mat-card-content>{{ avgMessagesPerDay7d }}</mat-card-content>
+      <mat-card-title>Cursos Activos</mat-card-title>
+      <mat-card-content class="large-number">{{
+        activeCourses
+      }}</mat-card-content>
     </mat-card>
   </div>
 
-  <!-- Gráficas -->
-  <div class="chart-grid">
+  <!-- Gráficos principales -->
+  <div class="main-charts">
     <mat-card class="chart-card">
-      <mat-card-title>Usuarios por rol</mat-card-title>
-      <canvas baseChart [data]="rolesPieData" [type]="'pie'"></canvas>
+      <mat-card-title>Distribución de Usuarios por Rol</mat-card-title>
+      <div class="chart-container">
+        <canvas baseChart [data]="rolesPieData" [type]="'pie'"> </canvas>
+      </div>
     </mat-card>
+
     <mat-card class="chart-card">
-      <mat-card-title>Estudiantes por curso</mat-card-title>
-      <canvas baseChart [data]="studentsBarData" [type]="'bar'"></canvas>
-    </mat-card>
-    <mat-card class="chart-card">
-      <mat-card-title>Entregas vs Pendientes</mat-card-title>
-      <canvas
-        baseChart
-        [data]="tasksStackedData"
-        [options]="tasksStackedOptions"
-        [type]="'bar'"
-      ></canvas>
-    </mat-card>
-    <mat-card class="chart-card">
-      <mat-card-title>Promedio de calificaciones por curso</mat-card-title>
-      <canvas baseChart [data]="gradesBarData" [type]="'bar'"></canvas>
-    </mat-card>
-    <mat-card class="chart-card">
-      <mat-card-title>Mensajes últimos 7 días</mat-card-title>
-      <canvas
-        baseChart
-        [data]="messagesLineData"
-        [options]="messagesLineOptions"
-        [type]="'line'"
-      ></canvas>
+      <mat-card-title>Actividad Reciente (Mensajes)</mat-card-title>
+      <div class="chart-container">
+        <canvas
+          baseChart
+          [data]="messagesLineData"
+          [options]="messagesLineOptions"
+          [type]="'line'"
+        >
+        </canvas>
+      </div>
     </mat-card>
   </div>
 
-  <!-- Listas de detalle -->
-  <div class="list-cards">
-    <mat-card>
-      <mat-card-title>Top 5 cursos con más estudiantes</mat-card-title>
-      <mat-list>
-        <mat-list-item *ngFor="let course of topCourses">
-          {{ course.titulo }} - {{ course.estudiantesCount }} estudiantes
-        </mat-list-item>
-      </mat-list>
-    </mat-card>
-    <mat-card>
-      <mat-card-title>Últimos 5 usuarios logueados</mat-card-title>
-      <mat-list>
-        <mat-list-item *ngFor="let user of recentUsers">
-          {{ user.nombre }} ({{ user.rol }}) - Último acceso:
-          {{ formatDate(user.lastLogin) }}
-        </mat-list-item>
-      </mat-list>
-    </mat-card>
+  <!-- Gráficos secundarios y listas -->
+  <div class="secondary-section">
+    <div class="chart-grid">
+      <mat-card class="chart-card">
+        <mat-card-title>Top Cursos con más Estudiantes</mat-card-title>
+        <div class="chart-container">
+          <canvas baseChart [data]="studentsBarData" [type]="'bar'"> </canvas>
+        </div>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-title>Estado de Tareas</mat-card-title>
+        <div class="chart-container">
+          <canvas
+            baseChart
+            [data]="tasksStackedData"
+            [options]="tasksStackedOptions"
+            [type]="'bar'"
+          >
+          </canvas>
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="list-section">
+      <mat-card class="list-card users-card">
+        <mat-card-title>Últimos Usuarios Registrados</mat-card-title>
+        <mat-list dense>
+          <mat-list-item
+            *ngFor="let user of recentUsers"
+            style="display: flex !important; align-items: center !important"
+          >
+            <div
+              style="display: flex !important; align-items: center !important"
+              class="avatar-container"
+              matListAvatar
+              [style.background-color]="getAvatarColor(user.nombre)"
+            >
+              <img
+                *ngIf="user.fotoPerfil"
+                [src]="user.fotoPerfil"
+                [alt]="user.nombre"
+              />
+              <div *ngIf="!user.fotoPerfil" class="avatar-fallback">
+                {{ getInitials(user.nombre) }}
+              </div>
+            </div>
+            <div class="user-info">
+              <h3 style="line-height: normal; margin-bottom: -2px">
+                {{ user.nombre }}
+              </h3>
+              <p style="line-height: normal; margin-bottom: -2px">
+                {{ user.rol | titlecase }} – {{ user.email }}
+              </p>
+              <p style="line-height: normal; margin-bottom: -2px" class="date">
+                Registrado: {{ formatDate(user.createdAt) }}
+              </p>
+            </div>
+          </mat-list-item>
+        </mat-list>
+      </mat-card>
+    </div>
   </div>
 </div>

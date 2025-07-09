@@ -51,6 +51,7 @@ import { UserListComponent } from './users/user-list/user-list.component';
 import { UserDialogComponent } from './dialogs/user-dialog/user-dialog.component';
 import { ProfileComponent } from './users/profile/profile.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { TruncatePipe } from './pipes/truncate.pipe';
 
 export function initFirebase(): () => void {
   return () => {
@@ -73,6 +74,7 @@ export function initFirebase(): () => void {
     UserDialogComponent,
     ProfileComponent,
     ResetPasswordComponent,
+    TruncatePipe,
   ],
   imports: [
     BrowserModule,

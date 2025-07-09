@@ -8,7 +8,7 @@ export interface User {
   fotoPerfil?: string;
   telefono?: string;
   bio?: string;
-  createdAt: Date;
+  createdAt: Date | any;
   lastLogin?: Date;
   active: boolean;
 
