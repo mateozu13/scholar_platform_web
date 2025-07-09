@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import { Observable, from } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { Course } from '../models/course.model';
 
 @Injectable({ providedIn: 'root' })
@@ -153,6 +153,47 @@ export class CourseService {
           } as Course;
         })
       )
+    );
+  }
+
+  getCourseCountsForUser(
+    userId: string
+  ): Observable<{ dictados: number; inscritos: number }> {
+    return this.getAllCourses().pipe(
+      take(1),
+      map((courses) => {
+        const dictados = courses.filter(
+          (c) => c.profesor?.id === userId
+        ).length;
+        const inscritos = courses.filter((c) =>
+          c.estudiantes?.some((s) => s.id === userId)
+        ).length;
+        return { dictados, inscritos };
+      })
+    );
+  }
+
+  /**
+   * (Opcional) Devuelve dos arrays paralelos con counts para cada userId.
+   * Útil si quieres calcular todos en un forkJoin de una sola vez.
+   */
+  getCourseCountsForUsers(userIds: string[]): Observable<{
+    dictados: number[];
+    inscritos: number[];
+  }> {
+    return this.getAllCourses().pipe(
+      take(1),
+      map((courses) => {
+        const dictados = userIds.map(
+          (uid) => courses.filter((c) => c.profesorId === uid).length
+        );
+        const inscritos = userIds.map(
+          (uid) =>
+            courses.filter((c) => c.estudiantes?.some((s) => s.id === uid))
+              .length
+        );
+        return { dictados, inscritos };
+      })
     );
   }
 }

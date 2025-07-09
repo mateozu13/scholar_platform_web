@@ -77,13 +77,17 @@
     <!-- Cursos Inscritos -->
     <ng-container matColumnDef="cursosInscritos">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Inscripciones</th>
-      <td mat-cell *matCellDef="let u">{{ u.cursosInscritosCount }}</td>
+      <td mat-cell *matCellDef="let u">
+        {{ u.cursosInscritosCount === 0 ? "-" : u.cursosInscritosCount }}
+      </td>
     </ng-container>
 
     <!-- Cursos Dictados -->
     <ng-container matColumnDef="cursosDictados">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Dictados</th>
-      <td mat-cell *matCellDef="let u">{{ u.cursosDictadosCount }}</td>
+      <td mat-cell *matCellDef="let u">
+        {{ u.cursosDictadosCount === 0 ? "-" : u.cursosDictadosCount }}
+      </td>
     </ng-container>
 
     <!-- Activo -->

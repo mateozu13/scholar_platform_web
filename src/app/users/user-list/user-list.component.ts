@@ -9,6 +9,8 @@ import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { UserDialogComponent } from '../../dialogs/user-dialog/user-dialog.component';
 import { AuthService } from '../../services/auth.service';
+import { CourseService } from '../../services/course.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-user-list',
@@ -35,6 +37,7 @@ export class UserListComponent implements OnInit {
   constructor(
     private userService: UserService,
     private authService: AuthService,
+    private courseService: CourseService,
     private dialog: MatDialog,
     private snack: MatSnackBar
   ) {}
@@ -45,25 +48,36 @@ export class UserListComponent implements OnInit {
 
   async loadUsers() {
     try {
-      const users = await this.userService.getAllUsers();
+      // 1) Carga todos los usuarios
+      const users: User[] = await this.userService.getAllUsers();
 
-      users.forEach((u) => {
-        u.cursosInscritosCount = u.cursosInscritos?.length || 0;
-        u.cursosDictadosCount = u.cursosDictados?.length || 0;
-      });
-      this.dataSource.data = users;
+      // 2) Extrae los IDs
+      const userIds = users.map((u) => u.id);
 
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      // 3) Llama al service para obtener dos arrays de counts
+      this.courseService
+        .getCourseCountsForUsers(userIds)
+        .pipe(take(1))
+        .subscribe(({ dictados, inscritos }) => {
+          // 4) Asigna a cada usuario sus contadores
+          users.forEach((u, idx) => {
+            u.cursosDictadosCount = dictados[idx];
+            u.cursosInscritosCount = inscritos[idx];
+          });
 
-      this.dataSource.filterPredicate = (u: User, f: string) => {
-        const term = f.trim().toLowerCase();
-        return (
-          u.nombre.toLowerCase().includes(term) ||
-          u.email.toLowerCase().includes(term) ||
-          u.rol.toLowerCase().includes(term)
-        );
-      };
+          // 5) Ahora inicializa tu dataSource
+          this.dataSource.data = users;
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          this.dataSource.filterPredicate = (u: User, f: string) => {
+            const term = f.trim().toLowerCase();
+            return (
+              u.nombre.toLowerCase().includes(term) ||
+              u.email.toLowerCase().includes(term) ||
+              u.rol.toLowerCase().includes(term)
+            );
+          };
+        });
     } catch (err) {
       console.error(err);
     }
