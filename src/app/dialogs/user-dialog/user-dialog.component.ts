@@ -54,6 +54,7 @@ export class UserDialogComponent implements OnInit {
       this.form.controls.email.disable();
       this.form.controls.bio.disable();
       this.form.controls.rol.disable();
+      this.form.controls.active.disable();
     }
   }
 

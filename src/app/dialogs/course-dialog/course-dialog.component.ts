@@ -57,16 +57,8 @@ export class CourseDialogComponent implements OnInit {
         titulo: this.course.titulo,
         descripcion: this.course.descripcion,
         nivel: this.course.nivel,
-        fechaInicio: this.course.fechaInicio
-          ? this.course.fechaInicio instanceof Date
-            ? this.course.fechaInicio
-            : new Date(this.course.fechaInicio)
-          : '',
-        fechaFin: this.course.fechaFin
-          ? this.course.fechaFin instanceof Date
-            ? this.course.fechaFin
-            : new Date(this.course.fechaFin)
-          : '',
+        fechaInicio: this.formatDate(this.course.fechaInicio),
+        fechaFin: this.formatDate(this.course.fechaFin),
         activo: this.course.activo !== undefined ? this.course.activo : true,
       });
 
@@ -74,6 +66,23 @@ export class CourseDialogComponent implements OnInit {
         this.imagePreview = this.course.imagenUrl;
       }
     }
+  }
+
+  formatDate(date: any): string {
+    if (!date) return 'No disponible';
+
+    let jsDate: Date;
+    if (date.seconds !== undefined && date.nanoseconds !== undefined) {
+      jsDate = new Date(date.seconds * 1000 + date.nanoseconds / 1000000);
+    } else if (date instanceof Date) {
+      jsDate = date;
+    } else {
+      jsDate = new Date(date);
+    }
+
+    if (isNaN(jsDate.getTime())) return 'No disponible';
+
+    return jsDate.toISOString();
   }
 
   dateRangeValidator: ValidatorFn = (group: FormGroup) => {

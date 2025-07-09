@@ -9,6 +9,7 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { take } from 'rxjs/operators';
 import { Course } from '../models/course.model';
 import { User } from '../models/user.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,6 +21,7 @@ export class DashboardComponent implements OnInit {
   totalCourses: number = 0;
   totalUsers: number = 0;
   pendingSubmissions: number = 0;
+  uploadedSubmissions: number = 0;
   activeCourses: number = 0;
 
   recentUsers: User[] = [];
@@ -72,6 +74,14 @@ export class DashboardComponent implements OnInit {
       .subscribe((count) => {
         this.pendingSubmissions = count;
       });
+
+    // Entregas realizadas
+    this.submissionService
+      .getUploadedSubmissionsCount()
+      .pipe(take(1))
+      .subscribe((count) => {
+        this.uploadedSubmissions = count;
+      });
   }
 
   loadCharts() {
@@ -114,28 +124,39 @@ export class DashboardComponent implements OnInit {
       .pipe(take(1))
       .subscribe((courses) => {
         const courseNames = courses.map((c) => c.titulo);
-        const delivered = courses.map((c) => c.deliveredSubmissions || 0);
-        const pending = courses.map((c) => c.pendingSubmissions || 0);
+        const courseIds = courses.map((c) => c.id);
 
-        this.tasksStackedData = {
-          labels: courseNames,
-          datasets: [
-            {
-              label: 'Entregadas',
-              data: delivered,
-              backgroundColor: '#36A2EB',
-            },
-            { label: 'Pendientes', data: pending, backgroundColor: '#FF6384' },
-          ],
-        };
-
-        this.tasksStackedOptions = {
-          responsive: true,
-          scales: {
-            x: { stacked: true },
-            y: { stacked: true, beginAtZero: true },
-          },
-        };
+        // Obtenemos datos entregados y pendientes en paralelo
+        forkJoin({
+          delivered:
+            this.submissionService.getDeliveredCountsByCourse(courseIds),
+          pending: this.submissionService.getPendingCountsByCourse(courseIds),
+        })
+          .pipe(take(1))
+          .subscribe(({ delivered, pending }) => {
+            this.tasksStackedData = {
+              labels: courseNames,
+              datasets: [
+                {
+                  label: 'Entregadas',
+                  data: delivered,
+                  backgroundColor: '#36A2EB',
+                },
+                {
+                  label: 'Pendientes',
+                  data: pending,
+                  backgroundColor: '#FF6384',
+                },
+              ],
+            };
+            this.tasksStackedOptions = {
+              responsive: true,
+              scales: {
+                x: { stacked: true },
+                y: { stacked: true, beginAtZero: true },
+              },
+            };
+          });
       });
 
     // Gráfico de línea: actividad de mensajes
